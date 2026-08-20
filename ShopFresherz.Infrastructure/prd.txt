@@ -1,0 +1,962 @@
+ShopFresher'z Gadget Store
+Backend Product Requirements Document
+Development-ready backend scope derived from the uploaded admin and customer UI screens
+
+Field                          | Value
+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------
+Document type                  | Backend PRD for engineering, QA, DevOps, and product implementation
+Product                        | ShopFresher'z Gadget Store
+Primary backend stack          | C# ASP.NET Core Web API, Microsoft SQL Server, Entity Framework Core, background workers, object storage, Paystack integration
+Currency and market assumption | NGN pricing, Nigeria-focused shipping and payment flow, with room for multi-currency later
+Input analyzed                 | 25 admin screens and 43 customer storefront/dashboard screens from the uploaded zip files
+Version                        | v1.0
+Prepared date                  | 2026-05-18
+
+Important assumption: this PRD is based on UI screenshots, not source code or database files. Any missing business rules are marked as assumptions or open questions so the developer does not guess silently.
+Practical use case: I structured this like the backend specification I would hand to a C#/.NET e-commerce team before splitting work into ASP.NET Core APIs, EF Core entities, SQL Server migrations, payment webhooks, and QA acceptance tests.
+
+Table of Contents
+1. Executive Summary
+2. Source Screen Inventory
+3. Product Scope and Personas
+4. Backend Architecture Requirements
+5. Roles, Permissions, and Security Model
+6. Core Domain Modules
+7. Data Model and Database Requirements
+8. API Requirements
+9. Workflows and State Machines
+10. Admin Backend Requirements
+11. Customer Backend Requirements
+12. Notifications, Emails, and Jobs
+13. Analytics and Reporting
+14. Non-Functional Requirements
+15. Observability, Audit, and Operations
+16. QA, Acceptance Criteria, and Test Plan
+17. Release Plan and Backend Milestones
+18. Open Questions and Decisions Needed
+19. Appendix: Suggested Developer Tickets
+
+1. Executive Summary
+ShopFresher'z is an e-commerce platform for gadgets and electronics. The uploaded screens show two connected products: a customer storefront and a separate admin console. The backend must support catalog management, product variants, inventory, cart, checkout, payments, order tracking, coupons, flash deals, reviews, customer dashboards, loyalty points, referrals, notifications, analytics, and content management.
+The backend should be built as a versioned API with a relational data model, transactional order creation, payment webhooks, inventory reservation, admin role controls, and clear audit logs. The UI already expects a rich admin experience, so the backend cannot be a simple CRUD layer. It must enforce business rules consistently and protect money, inventory, and customer data.
+
+Goals
+Reliable buying flow: Customers can browse products, manage cart and wishlist, complete checkout, pay, receive confirmation, and track orders.
+Admin operational control: Admins can manage products, categories, inventory, content, coupons, flash deals, customers, orders, reviews, settings, and analytics.
+Data integrity: Product price, discount, tax, shipping, coupon, loyalty, inventory, and payment states are stored as immutable order snapshots when checkout is completed.
+Secure foundation: Use RBAC, rate limiting, audit logs, webhook verification, tokenized payment references, and strict validation.
+Scale-ready architecture: Use async jobs for emails, notifications, analytics aggregation, image processing, coupon expiry, low stock alerts, and order lifecycle updates.
+
+Non-goals for v1
+Full marketplace seller onboarding is not shown in the screens and should not be built unless confirmed.
+Warehouse robotics, real-time carrier API routing, and multi-warehouse allocation are outside v1 unless logistics integrations are confirmed.
+Storing raw card numbers is strictly out of scope. Saved cards must use payment gateway tokens or authorization references only.
+Complex returns and refunds are not visibly shown. Basic cancel/refund hooks can be prepared, but policy must be confirmed before implementation.
+
+Recommended backend stack
+
+Layer                     | Recommendation                                                              | Reason
+--------------------------+-----------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+API framework             | C# ASP.NET Core Web API                                                     | Strong fit for enterprise-grade APIs, authentication, validation, OpenAPI docs, dependency injection, and maintainable service-layer development.
+Database                  | Microsoft SQL Server                                                        | Strong relational consistency for orders, payments, inventory, coupons, reviews, reporting, transactions, indexes, stored procedures where justified, and operational reporting.
+Cache and background jobs | Redis optional plus Hangfire, Quartz.NET, or .NET BackgroundService workers | Cart/session caching, rate limiting, async emails, image tasks, webhook retries, scheduled expiry jobs, low stock scans, and analytics rollups.
+Payments                  | Paystack first                                                              | Screens show Paystack in admin order detail. Use server-side payment initialization and verified webhooks.
+Object storage            | S3-compatible storage or Cloudinary                                         | Product images, category icons, banners, review media, and generated invoices.
+Search                    | SQL Server full-text search for v1, Azure AI Search or OpenSearch later     | Search bar and filters need fast product discovery without over-engineering day one.
+
+C#/.NET implementation requirements
+Project structure: Use an ASP.NET Core Web API solution with clear projects such as Api, Application, Domain, Infrastructure, and Tests. Keep controllers thin and move business rules into services/use cases.
+Data access: Use Entity Framework Core with SQL Server provider, code-first migrations, DbContext per bounded application, explicit indexes, unique constraints, and transaction scopes for checkout/order/payment flows.
+Authentication: Use ASP.NET Core Identity or a custom identity layer with JWT access tokens, refresh tokens, email verification, password reset, role claims, and policy-based authorization.
+Validation: Use request DTOs plus FluentValidation or DataAnnotations. Never bind EF entities directly from public API requests.
+API contract: Expose Swagger/OpenAPI for every endpoint. Version all public APIs under /api/v1 and keep response envelopes consistent.
+Background processing: Use Hangfire, Quartz.NET, or hosted workers for emails, webhook retries, stock alerts, image processing, invoice generation, scheduled coupon expiry, and analytics rollups.
+Configuration and secrets: Use appsettings by environment, environment variables, and a secret manager. Do not commit connection strings, Paystack keys, SMTP passwords, or JWT signing secrets.
+Logging and observability: Use ILogger/Serilog-style structured logs, correlation IDs, health checks, metrics, and alerts for checkout, payment webhooks, order creation, SQL Server errors, and background job failures.
+
+2. Source Screen Inventory
+The backend scope below is inferred from the uploaded UI files. These screens drive the backend feature list and the data objects needed.
+
+Admin console screens
+
+Area      | Screens observed                                                            | Backend implication
+----------+-----------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------
+Dashboard | Home Page, Menu, notification dropdown                                      | Revenue metrics, order counts, pending products, product count, low stock alerts, logistics feed, admin notifications.
+Catalog   | Products, Add New Products, Categories, Categories modal, Inventory         | Product CRUD, image upload, SEO fields, categories, stock quantities, SKU search, active/draft/out-of-stock states.
+Sales     | Orders, Order Details, Flash Deals, Flash Deal modal, Coupons, Coupon modal | Order lifecycle, order detail snapshots, payment status, shipping tracking, print invoice, coupon rules, deal scheduling.
+Community | Customers, Reviews                                                          | Customer directory, review moderation, review reply, ratings, product feedback data.
+Insights  | Analytics                                                                   | Aggregated revenue, traffic, best sellers, order conversion, regional or time-based reporting.
+Manage    | Content, Content banner modal, Settings group screens                       | CMS banners, home content blocks, logo/site settings, payment/shipping settings, notification settings, password reset.
+
+Customer storefront and dashboard screens
+
+Area             | Screens observed                                                                                          | Backend implication
+-----------------+-----------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------
+Storefront       | Home page, home popups, shop page, product detail                                                         | Featured sections, flash sales, best sellers, categories, search, product filters, product variants, ratings.
+Shopping         | Wishlist, shopping cart, checkout pages, place order, checkout success                                    | Cart persistence, wishlist, checkout quote, tax, shipping, discounts, payment creation, order confirmation.
+Auth             | Sign in, sign up, forgot password, reset password, email verification                                     | Account creation, verification emails, secure password reset, login tokens, rate limiting.
+Order tracking   | Track order, track order details, dashboard order history, dashboard order details, dashboard track order | Public order tracking, authenticated order history, timeline events, shipment status.
+Customer profile | Addresses, add new address, profile settings, card create, billing address                                | Saved addresses, payment method tokens, customer profile updates.
+Engagement       | Notifications, loyalty points, referral, my reviews, write review, chatbox                                | Notification inbox, points ledger, referral codes, review lifecycle, support chat stub or integration.
+Error handling   | 404 page                                                                                                  | Backend should return clear 404/410 states for missing product, order, or CMS route.
+
+3. Product Scope and Personas
+
+Personas
+
+Persona             | Primary jobs                                                                                                               | Backend permissions or needs
+--------------------+----------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------
+Guest customer      | Browse products, search, view product detail, add to cart, checkout as guest, track order using order reference.           | Read catalog, create anonymous cart, create guest order, limited tracking access.
+Registered customer | Save addresses, save payment token, view dashboard, manage wishlist, view orders, earn points, refer users, write reviews. | Own account data only, protected profile endpoints, authenticated order history.
+Admin               | Manage catalog, orders, inventory, content, reviews, coupons, flash deals, analytics, settings.                            | Admin RBAC with audit logging for sensitive mutations.
+Operations manager  | Update shipping status, tracking numbers, cancellations, low stock, logistics feed.                                        | Order and inventory permissions, cannot change payment gateway records directly.
+Marketing manager   | Manage banners, flash deals, coupons, categories, featured products, referral and loyalty campaigns.                       | Marketing and CMS permissions, cannot access payment secrets.
+Support agent       | View customer orders, help with tracking, respond to reviews, view customer contact data based on policy.                  | Read-only customer and order views, limited status updates if approved.
+
+Product modules in scope
+
+Module               | In scope v1                                                                                                 | Owner
+---------------------+-------------------------------------------------------------------------------------------------------------+------------------
+Authentication       | Register, login, email verification, forgot password, reset password, session refresh, logout.              | Backend
+Catalog              | Products, categories, variants, SKU, price, compare price, brand, images, SEO, featured status.             | Backend/Admin
+Inventory            | Stock quantity, low stock threshold, stock status, adjustment logs, order reservation.                      | Backend/Admin
+Promotions           | Coupons, flash deals, discounts, expiry, redemption limits, eligibility.                                    | Backend/Admin
+Cart and checkout    | Cart items, checkout quote, guest checkout, registered checkout, taxes, shipping selection, order creation. | Backend
+Payments             | Paystack initialize, verify, webhooks, payment status, saved token references, idempotency.                 | Backend/DevOps
+Orders               | Order creation, statuses, status history, invoice, cancellation, tracking number, customer tracking.        | Backend/Admin
+Reviews              | Product reviews, ratings, moderation, admin replies, review eligibility based on purchase.                  | Backend/Admin
+Loyalty and referral | Points account, points transactions, referral code, referral tracking, reward rules.                        | Backend/Marketing
+Notifications        | Admin/customer notification inbox, preferences, email jobs, low stock and order event notifications.        | Backend
+Analytics            | Dashboard KPIs, sales reports, product analytics, customer analytics, traffic/event aggregation.            | Backend/Data
+CMS and settings     | Home page content, banners, footer links, payment/shipping settings, contact info.                          | Backend/Admin
+
+4. Backend Architecture Requirements
+
+High-level architecture
+The backend should be a modular monolith for v1, with clean domain boundaries and versioned APIs. This is faster and safer than starting with many microservices. Keep modules separated at the app/package level so the system can later split payments, search, notifications, or analytics into services if traffic demands it.
+
+Client Web/Mobile
+-> API Gateway / Load Balancer
+-> Backend API /api/v1
+-> Auth Module
+-> Catalog Module
+-> Cart and Checkout Module
+-> Payment Module
+-> Order Module
+-> Admin Module
+-> Notification Module
+-> Analytics Module
+-> Microsoft SQL Server
+-> Redis Cache plus Hangfire/Worker Queue
+-> Object Storage for media
+-> Paystack Webhook Receiver
+-> Email/SMS Provider
+-> Observability Stack
+
+Backend principles
+Transactional order creation: Creating an order, reserving inventory, applying coupon redemption, and creating payment intent must be atomic where possible.
+Immutable order snapshots: Order items must store product name, SKU, image, selected variant, unit price, discount, tax, and shipping at purchase time. Later product edits must not rewrite old orders.
+Payment source of truth: Payment status should only become paid after gateway verification or webhook confirmation. Never trust client-side success alone.
+Idempotency: Checkout, payment initialization, webhook processing, and status updates must be idempotent to prevent double charges, duplicate orders, or duplicate points.
+Audit everything sensitive: Price changes, stock changes, coupon creation, order cancellation, status updates, admin login, role changes, and setting changes must write audit records.
+Queue slow work: Email, SMS, image resizing, analytics aggregation, low stock scanning, and notification fan-out must run async.
+
+Recommended module boundaries
+
+Module     | Responsibilities                                                                  | Do not put here
+-----------+-----------------------------------------------------------------------------------+-------------------------------------------------
+Auth       | Users, roles, email verification, reset tokens, sessions, rate limiting.          | Payment, catalog logic, analytics.
+Catalog    | Categories, brands, products, media, variants, SEO, search indexing.              | Order mutation, customer loyalty rules.
+Inventory  | Stock, reservations, low stock thresholds, adjustment logs.                       | Price calculation, coupon rules.
+Pricing    | Price calculation, compare price, coupon, flash deal, tax, shipping quote.        | Payment gateway calls.
+Checkout   | Cart validation, quote, order draft, address snapshot, shipping method selection. | Webhook verification.
+Payments   | Paystack init, verify, webhook, payment records, saved authorization references.  | Raw card storage.
+Orders     | Order state machine, invoices, tracking, cancellation, status history.            | Catalog editing.
+Engagement | Reviews, wishlist, loyalty, referrals, notifications.                             | Core money movement.
+Admin      | Admin-only endpoints, dashboard aggregations, settings, CMS.                      | Customer-only data mutation unless permissioned.
+
+5. Roles, Permissions, and Security Model
+
+Roles
+
+Role              | Allowed                                                                                               | Restricted
+------------------+-------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------
+super_admin       | Full access, role management, payment settings, site settings, all admin modules.                     | Cannot directly mark payment as paid without gateway evidence unless emergency override is logged.
+admin             | Catalog, content, orders, reviews, customers, analytics.                                              | Cannot manage roles or payment secrets.
+ops_manager       | Orders, shipments, tracking, inventory view, status changes, cancellation workflow.                   | Cannot edit product pricing unless granted.
+catalog_manager   | Products, categories, inventory, media, SEO.                                                          | Cannot view payment secrets or customer full payment records.
+marketing_manager | Coupons, flash deals, banners, featured products, referral and loyalty rules.                         | Cannot cancel paid orders or change payment settings.
+support_agent     | Read customer profiles and orders, respond to customer issues, limited notes.                         | Cannot edit prices, inventory, coupons, or payment settings.
+customer          | Own account, cart, wishlist, orders, addresses, reviews, loyalty, referrals.                          | Cannot access any admin endpoint or another customer account.
+guest             | Browse catalog, create guest cart, checkout, public tracking with reference and contact verification. | Cannot access account dashboard or saved data.
+
+Security requirements
+All admin APIs require authenticated user, admin role, permission check, CSRF protection if using cookie sessions, and audit logging.
+Customer APIs require ownership checks on cart, wishlist, addresses, payment method tokens, orders, reviews, and notification records.
+Use JWT with refresh tokens or secure server-side sessions. Refresh tokens must be rotatable and revocable.
+Use rate limits on login, register, password reset, email verification, coupon validation, tracking lookup, and checkout attempts.
+Use input validation on every request. Normalize email, phone, SKU, slugs, and money amounts. Reject negative pricing and invalid stock quantities.
+Use Paystack webhook signature verification. Process webhooks idempotently by event id and payment reference.
+Never store raw card PAN, CVV, or expiry as a payment instrument. Store only gateway customer code, authorization code, card brand, last4, and expiry month/year if provided by the gateway.
+Money must be stored as integer minor units, such as kobo, not floating-point decimals.
+Protect media uploads with file type checks, size limits, malware scanning when available, and private original storage with public optimized derivatives.
+Use soft delete for products, categories, coupons, customers, and CMS content where historical orders need references.
+
+6. Core Domain Modules
+
+6.1 Authentication and Accounts
+Register with first name, last name, email, phone, and password.
+Send email verification code or token after registration.
+Block sensitive actions until email is verified if business decides this is required.
+Support sign in, forgot password, reset password, logout, and refresh session.
+Store password with strong hashing such as Argon2id or bcrypt.
+Support guest checkout without forcing registration, while allowing account linking later by email or phone.
+
+Acceptance scenario | Expected backend behavior
+--------------------+-----------------------------------------------------------------------------
+Register success    | A new customer receives verification email and can sign in if policy allows.
+Reset password      | Token expires, is single-use, and does not reveal whether an email exists.
+Admin login         | Admin login writes audit event and uses stronger rate limit rules.
+
+6.2 Catalog and Product Management
+Admin can create product with name, description, category, price, compare-at price, stock quantity, SKU, images, SEO meta title, SEO meta description, slug, active flag, and featured flag.
+Support product status values: draft, active, inactive, out_of_stock, archived.
+Support variants/options shown in product detail such as color, memory, storage, and size.
+Support product gallery images with sort order and primary image.
+Support brand, category, availability, rating summary, and product tags for storefront filters.
+Generate unique slug from name but allow admin override if unique.
+
+Acceptance scenario | Expected backend behavior
+--------------------+------------------------------------------------------------------------------------------------------------------
+SKU uniqueness      | The API rejects duplicate SKU for active or draft product variants.
+Price validation    | Compare-at price must be greater than or equal to selling price when present.
+Product detail      | Customer endpoint returns product, variants, media, rating summary, stock status, related sections, and SEO data.
+
+6.3 Categories and Navigation
+Admin can create, update, activate, deactivate, and reorder categories.
+Categories support optional parent category, icon/image, slug, menu visibility, and featured flag.
+Customer storefront can fetch category menu, top categories, and category detail page.
+Category deletion must be blocked if active products exist unless reassignment or archive is selected.
+
+Acceptance scenario | Expected backend behavior
+--------------------+------------------------------------------------------------------------------
+Menu API            | Header category dropdown loads active visible categories in configured order.
+SEO                 | Category pages return slug, meta title, and meta description.
+
+6.4 Inventory
+Store stock on hand, reserved stock, available stock, low stock threshold, and stock status per product or variant.
+Checkout must reserve stock before payment finalization to reduce overselling.
+Release reservation when payment fails, expires, or order is cancelled before fulfillment.
+Deduct stock only when payment is confirmed or when order is moved into processing, depending on policy.
+Low stock alerts trigger admin notifications and dashboard cards.
+
+Acceptance scenario | Expected backend behavior
+--------------------+------------------------------------------------------------------------------------------------------
+Oversell protection | Two simultaneous checkouts cannot push available stock below zero.
+Adjustment log      | Every manual stock change records before quantity, after quantity, reason, admin user, and timestamp.
+
+6.5 Pricing, Tax, Shipping, Coupons, and Flash Deals
+Price calculation service must combine product price, active flash deal, coupon, shipping fee, VAT/tax, and loyalty redemption if enabled.
+Coupons support code, type, value, min order amount, max discount, usage limit, per-user limit, start date, end date, active flag, eligible categories/products, and first-order-only flag.
+Flash deals support title, banner image, start time, end time, active flag, product list, deal price or percent discount, and stock limit if needed.
+Tax should be configurable. Screenshot shows VAT at 7.5 percent in admin order detail, so default tax assumption is 7.5 percent until confirmed.
+Shipping methods should be configurable by name, price, ETA, free shipping threshold, region, and active flag.
+
+Acceptance scenario | Expected backend behavior
+--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Coupon expiry       | Expired coupon cannot be applied and scheduled jobs mark it expired.
+Best discount rule  | If a product has flash deal and coupon, backend applies configured stacking rule. Default: coupons cannot discount already flash-deal-discounted items unless explicitly allowed.
+Quote consistency   | Checkout quote and final order totals must match unless cart changed, coupon expired, or stock changed.
+
+6.6 Cart, Wishlist, and Checkout
+Cart supports guest and logged-in users. Guest cart uses secure anonymous cart id or session key.
+Cart item stores product, variant, quantity, selected options, price preview, and validation state.
+Wishlist belongs to registered customer. Guest wishlist can be local-only unless account creation is implemented.
+Checkout supports billing information, delivery/shipping selection, payment method selection, order summary, and place order.
+Registered checkout can save address and use saved addresses. Guest checkout stores address snapshot only.
+
+Acceptance scenario | Expected backend behavior
+--------------------+-------------------------------------------------------------------------------------------------------
+Cart validation     | Cart returns unavailable, price_changed, stock_changed, and coupon_invalid flags when needed.
+Guest checkout      | Guest can place order with email and phone and later track using order number plus verification field.
+Registered checkout | Logged-in customer order appears in dashboard order history immediately after creation.
+
+6.7 Payments
+Use server-side payment initialization with Paystack. Client receives payment authorization URL or access code from backend.
+Create Payment row before redirecting to gateway. Use unique reference generated by backend.
+Payment becomes paid only after webhook or server verification confirms success.
+Handle failed, abandoned, pending, reversed, refunded, and chargeback states if Paystack supplies them.
+Saved card feature must use Paystack authorization reference. Do not store raw card numbers.
+Admin order detail can display gateway name, payment status, amount, reference, and paid timestamp.
+
+Acceptance scenario | Expected backend behavior
+--------------------+------------------------------------------------------------------------------------------------------------
+Webhook idempotency | Repeated webhook event does not create duplicate payment records, orders, notifications, or loyalty points.
+Amount verification | Webhook amount and currency must match the order payment due amount.
+Manual override     | Any admin payment correction requires super_admin permission and audit reason.
+
+6.8 Orders and Tracking
+Order number format should be human-readable, such as SF-YYYYMMDD-001, and unique.
+Order statuses: pending_payment, paid, processing, shipped, delivered, cancelled, payment_failed, refunded.
+UI labels can map to simpler labels: Pending, Processing, Shipped, Delivered, Cancelled.
+Store line items, customer snapshot, address snapshot, financial summary, shipping method, payment info, tracking number, and status history.
+Admin can update order status and tracking number. Customer can track via dashboard or public tracking page.
+Admin can print invoice from the order detail view. Invoice should use immutable order snapshots.
+
+Acceptance scenario | Expected backend behavior
+--------------------+-----------------------------------------------------------------------------------------------------------
+Status transition   | Delivered order cannot move back to pending without super_admin override.
+Tracking            | When tracking number is saved, customer notification is created.
+Cancel order        | Cancelling a paid order must trigger payment refund workflow or mark refund_required, depending on policy.
+
+6.9 Reviews and Ratings
+Customers can write product reviews, ideally only after purchasing the product.
+Reviews include rating, title/body, optional media, product, customer, order item reference, status, and admin reply.
+Admin can approve, reject, hide, reply, or flag a review.
+Product rating summary should update asynchronously after review changes.
+
+Acceptance scenario | Expected backend behavior
+--------------------+---------------------------------------------------------------------
+Eligibility         | Customer cannot review the same purchased order item more than once.
+Moderation          | Rejected or hidden reviews do not affect product average rating.
+
+6.10 Loyalty and Referrals
+Customer dashboard shows loyalty points balance, history, and reward actions.
+Points ledger records source, delta, balance after, related order or referral, expiry, and status.
+Referral dashboard shows referral code/link, invited users, conversion status, and rewards earned.
+Referral reward should only become confirmed after referred customer completes qualifying action such as first paid order.
+
+Acceptance scenario | Expected backend behavior
+--------------------+---------------------------------------------------------------------------------------------
+Ledger integrity    | Points balance is derived from transactions, not manually edited directly.
+Fraud control       | Self-referral, duplicate device abuse, and repeated same payment identity should be flagged.
+
+6.11 Notifications and Emails
+Customer notifications: order placed, payment success/failure, shipped, delivered, coupon, loyalty, referral, review reply.
+Admin notifications: new order, low stock, payment issue, new review, order cancelled, support/chat message.
+Notification dropdown shows recent events and unread state.
+Email templates for verification, reset password, order confirmation, shipping update, delivery confirmation, and admin alerts.
+
+Acceptance scenario | Expected backend behavior
+--------------------+--------------------------------------------------------------------------------------
+Unread state        | Opening notification list does not automatically mark all as read unless UX confirms.
+Delivery retry      | Failed email jobs retry with backoff and final failure is logged.
+
+6.12 CMS, Settings, and Storefront Content
+Admin can manage content banners, home popups, featured sections, homepage category blocks, footer contact info, and social links.
+Settings include store profile, payment method availability, shipping methods, notification rules, and security/password settings.
+CMS content should support draft, scheduled, active, and archived states.
+
+Acceptance scenario | Expected backend behavior
+--------------------+----------------------------------------------------------------------
+Content visibility  | Only active content within publish window appears on storefront.
+Settings audit      | Payment, shipping, tax, and notification setting changes are audited.
+
+7. Data Model and Database Requirements
+Use Microsoft SQL Server as the primary transactional database. Use UNIQUEIDENTIFIER or BIGINT primary keys based on team standard, with separate human-readable references for orders, payments, coupons, and customers. Store all money values as integer minor units. Store timestamps in UTC using datetimeoffset where possible. Use soft delete where records may be referenced by historical orders. Add rowversion columns for entities that need optimistic concurrency, such as products, inventory, orders, coupons, and settings.
+
+SQL Server and EF Core rules
+Every EF Core migration must be reviewed before deployment, especially changes to money, inventory, payment, and order tables.
+Create indexes for product slug, SKU, category_id, brand_id, status, created_at, order_number, payment_reference, customer_id, coupon_code, and all common dashboard filters.
+Use foreign keys for core relationships. Avoid disabling constraints just to make imports easier.
+Use decimal only for calculated display values when needed, but store money totals as integer minor units to avoid rounding bugs.
+Use rowversion for optimistic concurrency on inventory, product pricing, coupon, order, and settings records.
+Use SQL Server transaction isolation carefully for checkout. The goal is no overselling, no duplicate coupon redemption, and no duplicate payment processing.
+Avoid stored procedures for normal CRUD in v1 unless the query is complex reporting or performance-critical. Keep business rules in C# services so tests stay clear.
+
+Entity groups
+
+Group                 | Tables                                                                                                              | Purpose
+----------------------+---------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------
+User and security     | users, roles, permissions, user_roles, sessions, email_verification_tokens, password_reset_tokens, admin_audit_logs | Owns authentication, RBAC, and accountability.
+Customer profile      | customer_profiles, addresses, payment_methods, notification_preferences                                             | Stores customer profile and saved checkout data.
+Catalog               | categories, brands, products, product_variants, product_options, product_media, product_tags                        | Powers storefront and admin product management.
+Inventory             | inventory_items, inventory_reservations, inventory_adjustments, low_stock_alerts                                    | Prevents overselling and records operational stock changes.
+Pricing and promos    | coupons, coupon_rules, coupon_redemptions, flash_deals, flash_deal_items, tax_rates, shipping_methods               | Calculates checkout totals and campaign rules.
+Cart and wishlist     | carts, cart_items, wishlists, wishlist_items                                                                        | Persists shopping intent.
+Orders and payments   | orders, order_items, order_status_history, payments, payment_events, invoices, shipments                            | Stores immutable purchase records and payment state.
+Engagement            | reviews, review_replies, loyalty_accounts, loyalty_transactions, referrals, referral_events                         | Supports dashboard, reviews, retention, and customer growth loops.
+Notifications and CMS | notifications, notification_deliveries, email_jobs, cms_blocks, banners, site_settings                              | Supports content and message delivery.
+Analytics             | analytics_events, daily_sales_rollups, product_sales_rollups, search_queries                                        | Feeds dashboard and reporting without making the app slow.
+
+Core table specifications
+
+Table                 | Important fields                                                                                                                                                         | Rules
+----------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------
+users                 | id, email, phone, password_hash, first_name, last_name, is_email_verified, is_active, last_login_at, created_at, updated_at                                              | Unique email; unique normalized phone if provided; password never returned.
+roles                 | id, name, description                                                                                                                                                    | Seed roles: super_admin, admin, ops_manager, catalog_manager, marketing_manager, support_agent, customer.
+customer_profiles     | id, user_id, display_name, avatar_url, loyalty_account_id, referral_code, marketing_opt_in                                                                               | One profile per customer user.
+addresses             | id, user_id, type, first_name, last_name, company, address_line1, address_line2, country, region, city, postal_code, phone, is_default                                   | Customer owns address. Order stores address snapshot separately.
+payment_methods       | id, user_id, gateway, gateway_customer_code, authorization_code, brand, last4, exp_month, exp_year, reusable, is_default                                                 | Token/reference only. No PAN/CVV.
+categories            | id, parent_id, name, slug, description, icon_url, image_url, sort_order, is_active, is_featured, show_in_menu                                                            | Slug unique. Block delete if products exist.
+brands                | id, name, slug, logo_url, is_active                                                                                                                                      | Used for product detail and filtering.
+products              | id, name, slug, description, category_id, brand_id, base_sku, status, price_minor, compare_at_price_minor, currency, is_featured, seo_title, seo_description             | Status drives storefront visibility. Price can be overridden by variant if needed.
+product_variants      | id, product_id, sku, option_values_json, price_minor, compare_at_price_minor, is_default, is_active                                                                      | Unique SKU. Variant supports color, memory, storage, size.
+product_media         | id, product_id, variant_id, url, alt_text, media_type, sort_order, is_primary                                                                                            | At least one primary image for active products.
+inventory_items       | id, product_id, variant_id, stock_on_hand, reserved_qty, low_stock_threshold, allow_backorder                                                                            | Available = stock_on_hand - reserved_qty. Use row locks on checkout.
+inventory_adjustments | id, inventory_item_id, before_qty, after_qty, delta, reason, created_by, created_at                                                                                      | Required for every manual stock change.
+coupons               | id, code, description, discount_type, value, max_discount_minor, min_order_minor, start_at, end_at, usage_limit, per_user_limit, is_active                               | Code unique case-insensitive.
+coupon_redemptions    | id, coupon_id, user_id, order_id, discount_minor, redeemed_at, status                                                                                                    | Prevents repeated use beyond limits.
+flash_deals           | id, title, banner_url, start_at, end_at, status, created_by                                                                                                              | Active only inside date window.
+flash_deal_items      | id, flash_deal_id, product_id, variant_id, deal_price_minor, discount_percent, quantity_limit, sold_qty                                                                  | One active deal per product/variant at a time by default.
+carts                 | id, user_id, guest_key, currency, coupon_id, expires_at, created_at, updated_at                                                                                          | Either user_id or guest_key required.
+cart_items            | id, cart_id, product_id, variant_id, quantity, selected_options_json, price_snapshot_minor                                                                               | Validate price and stock before checkout.
+orders                | id, order_number, user_id, guest_email, guest_phone, status, currency, subtotal_minor, discount_minor, tax_minor, shipping_minor, total_minor, payment_status, placed_at | Immutable financial summary after creation.
+order_items           | id, order_id, product_id, variant_id, product_name, sku, image_url, option_values_json, unit_price_minor, quantity, discount_minor, tax_minor, total_minor               | Snapshot fields protect historical accuracy.
+payments              | id, order_id, gateway, reference, amount_minor, currency, status, paid_at, gateway_customer_code, raw_verified_at                                                        | Unique reference. Status from gateway.
+payment_events        | id, payment_id, gateway_event_id, event_type, payload_json, processed_at                                                                                                 | Idempotent webhook processing.
+shipments             | id, order_id, shipping_method_id, tracking_number, carrier, status, eta_text, shipped_at, delivered_at                                                                   | Supports admin tracking and customer track order page.
+order_status_history  | id, order_id, from_status, to_status, note, changed_by, created_at                                                                                                       | Every status change gets a history row.
+reviews               | id, product_id, user_id, order_item_id, rating, title, body, status, created_at, updated_at                                                                              | Status values: pending, approved, rejected, hidden.
+review_replies        | id, review_id, admin_id, body, created_at                                                                                                                                | One or many admin replies depending on policy.
+loyalty_transactions  | id, user_id, order_id, referral_id, points_delta, balance_after, reason, status, expires_at                                                                              | Ledger is source of truth.
+referrals             | id, referrer_user_id, referred_user_id, referral_code, status, qualified_at, reward_points                                                                               | Prevent self-referral and duplicate reward.
+notifications         | id, user_id, admin_role_target, type, title, body, entity_type, entity_id, read_at, created_at                                                                           | Supports both customer and admin notification inbox.
+cms_blocks            | id, key, title, content_json, image_url, status, start_at, end_at, sort_order                                                                                            | Home banners, popups, footer blocks, featured sections.
+site_settings         | id, key, value_json, updated_by, updated_at                                                                                                                              | Store configuration, tax, shipping defaults, payment toggles.
+analytics_events      | id, user_id, session_id, event_name, entity_type, entity_id, metadata_json, created_at                                                                                   | Append-only events for analytics rollups.
+
+Critical indexes and constraints
+users.email unique lower-case index.
+products.slug unique index where deleted_at is null.
+product_variants.sku unique index.
+categories.slug unique index.
+orders.order_number unique index.
+payments.reference unique index.
+payment_events.gateway_event_id unique index.
+coupons.code unique lower-case index.
+cart_items unique cart_id plus variant_id to prevent duplicate line items.
+reviews unique user_id plus order_item_id to prevent duplicate purchased review.
+inventory_items unique product_id plus variant_id.
+partial indexes for active products, active categories, active coupons, active flash deals.
+
+8. API Requirements
+Use REST APIs under /api/v1. Every response should use a consistent envelope for success and error states. Admin endpoints should be separated under /admin or protected by an admin permission layer. All list endpoints should support pagination, sorting, and filtering.
+
+Response conventions
+
+Success:
+{
+"success": true,
+"data": { ... },
+"meta": { "request_id": "req_123", "pagination": { ... } }
+}
+
+Error:
+{
+"success": false,
+"error": {
+"code": "VALIDATION_ERROR",
+"message": "Some fields are invalid.",
+"fields": { "email": ["Email is required"] }
+},
+"meta": { "request_id": "req_123" }
+}
+
+8.1 Auth and account endpoints
+
+Method | Endpoint              | Auth        | Purpose
+-------+-----------------------+-------------+-----------------------------------------------------
+POST   | /auth/register        | Public      | Create customer account and send email verification.
+POST   | /auth/login           | Public      | Authenticate user and return tokens/session.
+POST   | /auth/logout          | User        | Revoke refresh token or destroy session.
+POST   | /auth/refresh         | User        | Rotate refresh token and return new access token.
+POST   | /auth/email/verify    | Public      | Verify email using token or code.
+POST   | /auth/email/resend    | Public/User | Resend verification with rate limit.
+POST   | /auth/password/forgot | Public      | Send reset email without account enumeration.
+POST   | /auth/password/reset  | Public      | Reset password using single-use token.
+GET    | /me                   | User        | Return current authenticated profile.
+PATCH  | /me/profile           | Customer    | Update profile settings.
+
+8.2 Storefront catalog endpoints
+
+Method | Endpoint               | Auth   | Purpose
+-------+------------------------+--------+---------------------------------------------------------------------------------
+GET    | /store/home            | Public | Return homepage sections, banners, flash sale, best sellers, top categories.
+GET    | /categories            | Public | Return active categories for menu and shop filters.
+GET    | /categories/{slug}     | Public | Return category detail and SEO metadata.
+GET    | /products              | Public | Search and filter products by query, category, price, brand, rating, sort, page.
+GET    | /products/{slug}       | Public | Return product detail, media, variants, stock status, ratings, related sections.
+GET    | /products/{id}/reviews | Public | Return approved reviews and rating summary.
+GET    | /search/suggestions    | Public | Return product/category suggestions for search bar.
+GET    | /flash-deals/active    | Public | Return active flash deals and items.
+
+8.3 Cart and wishlist endpoints
+
+Method | Endpoint             | Auth       | Purpose
+-------+----------------------+------------+----------------------------------------------
+GET    | /cart                | Guest/User | Return current cart with validation warnings.
+POST   | /cart/items          | Guest/User | Add item by product/variant and quantity.
+PATCH  | /cart/items/{id}     | Guest/User | Update quantity or selected options.
+DELETE | /cart/items/{id}     | Guest/User | Remove item.
+POST   | /cart/coupon         | Guest/User | Apply coupon code and reprice cart.
+DELETE | /cart/coupon         | Guest/User | Remove coupon and reprice cart.
+GET    | /wishlist            | Customer   | Return customer wishlist.
+POST   | /wishlist/items      | Customer   | Add product/variant to wishlist.
+DELETE | /wishlist/items/{id} | Customer   | Remove wishlist item.
+
+8.4 Checkout, payment, and order endpoints
+
+Method | Endpoint                      | Auth        | Purpose
+-------+-------------------------------+-------------+-------------------------------------------------------------------------
+POST   | /checkout/quote               | Guest/User  | Validate cart, address, shipping, coupon, tax, and return payable total.
+POST   | /orders                       | Guest/User  | Create order from validated quote. Use idempotency key.
+POST   | /payments/paystack/initialize | Guest/User  | Create Paystack transaction for an order.
+POST   | /payments/paystack/verify     | Guest/User  | Verify payment reference after redirect.
+POST   | /webhooks/paystack            | Paystack    | Receive and verify Paystack webhook events.
+GET    | /orders/{order_number}        | Owner/Admin | Return order detail.
+GET    | /orders                       | Customer    | Return authenticated customer order history.
+GET    | /track-order                  | Public      | Track order by order number plus email or phone.
+POST   | /orders/{id}/cancel           | Owner/Admin | Request cancellation when allowed by status.
+
+8.5 Customer dashboard endpoints
+
+Method | Endpoint                 | Auth     | Purpose
+-------+--------------------------+----------+----------------------------------------------------------------
+GET    | /dashboard/summary       | Customer | Return dashboard metrics, recent orders, notifications, points.
+GET    | /addresses               | Customer | List saved addresses.
+POST   | /addresses               | Customer | Create address.
+PATCH  | /addresses/{id}          | Customer | Update address.
+DELETE | /addresses/{id}          | Customer | Delete address if not required as default.
+GET    | /payment-methods         | Customer | List saved tokenized payment methods.
+DELETE | /payment-methods/{id}    | Customer | Remove saved gateway authorization reference.
+GET    | /notifications           | Customer | List customer notifications.
+PATCH  | /notifications/{id}/read | Customer | Mark notification as read.
+GET    | /loyalty                 | Customer | Return points balance and ledger.
+GET    | /referrals               | Customer | Return referral code, link, stats, and reward history.
+GET    | /reviews/me              | Customer | Return my reviews.
+POST   | /reviews                 | Customer | Create product review for eligible order item.
+
+8.6 Admin catalog endpoints
+
+Method | Endpoint                     | Auth            | Purpose
+-------+------------------------------+-----------------+----------------------------------------------------------------
+GET    | /admin/products              | Admin           | List products with search, status, category, stock, pagination.
+POST   | /admin/products              | Catalog manager | Create product.
+GET    | /admin/products/{id}         | Catalog manager | Get full admin product detail.
+PATCH  | /admin/products/{id}         | Catalog manager | Update product and SEO fields.
+DELETE | /admin/products/{id}         | Catalog manager | Archive product.
+POST   | /admin/products/{id}/media   | Catalog manager | Upload or attach product media.
+PATCH  | /admin/products/{id}/status  | Catalog manager | Draft, active, inactive, archived status update.
+GET    | /admin/categories            | Catalog manager | List categories.
+POST   | /admin/categories            | Catalog manager | Create category.
+PATCH  | /admin/categories/{id}       | Catalog manager | Update category.
+DELETE | /admin/categories/{id}       | Catalog manager | Archive category if safe.
+GET    | /admin/inventory             | Catalog/Ops     | List inventory and low stock items.
+POST   | /admin/inventory/adjustments | Catalog/Ops     | Adjust stock with reason.
+
+8.7 Admin sales and promo endpoints
+
+Method | Endpoint                    | Auth      | Purpose
+-------+-----------------------------+-----------+-------------------------------------------------------
+GET    | /admin/orders               | Ops/Admin | List orders by status, date, customer, payment status.
+GET    | /admin/orders/{id}          | Ops/Admin | Return complete admin order detail.
+PATCH  | /admin/orders/{id}/status   | Ops/Admin | Update order lifecycle status.
+PATCH  | /admin/orders/{id}/shipment | Ops/Admin | Update tracking number, carrier, ETA, shipping status.
+POST   | /admin/orders/{id}/cancel   | Ops/Admin | Cancel order and trigger stock/payment workflow.
+GET    | /admin/orders/{id}/invoice  | Ops/Admin | Generate or fetch PDF invoice.
+POST   | /admin/orders/import-csv    | Admin     | Optional bulk import if business confirms format.
+GET    | /admin/coupons              | Marketing | List coupons.
+POST   | /admin/coupons              | Marketing | Create coupon.
+PATCH  | /admin/coupons/{id}         | Marketing | Update coupon.
+DELETE | /admin/coupons/{id}         | Marketing | Archive coupon.
+GET    | /admin/flash-deals          | Marketing | List flash deals.
+POST   | /admin/flash-deals          | Marketing | Create flash deal.
+PATCH  | /admin/flash-deals/{id}     | Marketing | Update flash deal.
+DELETE | /admin/flash-deals/{id}     | Marketing | Archive flash deal.
+
+8.8 Admin customer, review, content, settings, and analytics endpoints
+
+Method | Endpoint                     | Auth              | Purpose
+-------+------------------------------+-------------------+----------------------------------------------------------
+GET    | /admin/customers             | Admin/Support     | List customers with order count, spend, status.
+GET    | /admin/customers/{id}        | Admin/Support     | View customer profile and order summary.
+PATCH  | /admin/customers/{id}/status | Admin             | Activate, suspend, or flag customer.
+GET    | /admin/reviews               | Admin/Marketing   | List reviews by status and product.
+PATCH  | /admin/reviews/{id}/status   | Admin/Marketing   | Approve, reject, hide, or flag review.
+POST   | /admin/reviews/{id}/reply    | Admin/Marketing   | Add admin reply.
+GET    | /admin/content               | Marketing         | List CMS blocks and banners.
+POST   | /admin/content               | Marketing         | Create CMS block or banner.
+PATCH  | /admin/content/{id}          | Marketing         | Update CMS block or banner.
+GET    | /admin/settings              | Super admin/Admin | Read site, payment, shipping, tax, notification settings.
+PATCH  | /admin/settings/{key}        | Super admin/Admin | Update setting and audit it.
+GET    | /admin/dashboard             | Admin             | Return dashboard KPIs, charts, low stock, logistics feed.
+GET    | /admin/analytics/sales       | Admin             | Revenue, orders, profit/loss style chart data.
+GET    | /admin/notifications         | Admin             | Return admin notification dropdown/list.
+
+Sample request: create product
+
+POST /api/v1/admin/products
+{
+"name": "Samsung Galaxy S24 Ultra",
+"description": "Titanium Gray, 512GB",
+"category_id": "cat_uuid",
+"brand_id": "brand_uuid",
+"price_minor": 85000000,
+"compare_at_price_minor": 91625000,
+"currency": "NGN",
+"sku": "SF-S24U-512-GRY",
+"stock_quantity": 10,
+"low_stock_threshold": 3,
+"seo_title": "Samsung Galaxy S24 Ultra in Nigeria",
+"seo_description": "Buy Samsung Galaxy S24 Ultra from ShopFresherz.",
+"status": "active",
+"is_featured": true,
+"options": { "color": ["Titanium Gray"], "storage": ["512GB"] }
+}
+
+Sample request: checkout quote
+
+POST /api/v1/checkout/quote
+{
+"cart_id": "cart_uuid",
+"coupon_code": "WELCOME10",
+"shipping_address": {
+"country": "NG",
+"region": "Akwa Ibom",
+"city": "Uyo",
+"address_line1": "Customer address",
+"phone": "+234..."
+},
+"shipping_method_id": "ship_uuid"
+}
+
+9. Workflows and State Machines
+
+9.1 Registration and email verification
+Customer submits sign-up form.
+Backend validates email, phone, password strength, and terms acceptance if present.
+Backend creates inactive or active-unverified user based on policy.
+Backend generates verification token/code with expiry and queues email.
+Customer verifies email. Backend marks user email verified and invalidates token.
+Customer can access dashboard features once authenticated and verified if verification is required.
+
+9.2 Product creation
+Admin opens Add New Product modal.
+Backend receives product fields, SKU, price, stock, SEO, images, active and featured flags.
+Backend validates SKU uniqueness, price, category, image type, and product status.
+Backend creates product, default variant, media records, inventory item, audit log, and search index job.
+Product appears on storefront only if status is active, category is active, and stock policy allows display.
+
+9.3 Checkout and payment
+Customer cart is validated against product status, stock, coupon, flash deal, tax, and shipping method.
+Backend returns checkout quote with subtotal, discount, tax, shipping, and total.
+Customer places order. Backend uses idempotency key and creates pending_payment order.
+Backend reserves inventory, creates order items and payment record, then initializes Paystack transaction.
+Customer completes Paystack checkout.
+Paystack webhook hits backend. Backend verifies signature and amount, marks payment paid, updates order to paid or processing, confirms stock reservation, creates notifications, queues email, and awards points if configured.
+If payment fails or expires, backend releases inventory reservation and marks payment failed.
+
+9.4 Order lifecycle
+
+pending_payment
+-> payment_failed
+-> paid
+-> processing
+-> shipped
+-> delivered
+-> cancelled
+-> refunded
+
+Rules:
+- pending_payment can expire and release stock.
+- paid can move to processing or cancelled depending on fulfillment policy.
+- shipped cannot be cancelled by customer.
+- delivered is terminal unless refund/return policy is added.
+- every transition writes order_status_history.
+
+9.5 Inventory reservation state
+
+available stock = stock_on_hand - reserved_qty
+
+Cart add:
+- Does not reserve stock in v1 by default.
+
+Order created pending_payment:
+- Reserve stock for each order item.
+
+Payment confirmed:
+- Convert reservation into committed sale or deduct stock_on_hand.
+
+Payment failed, expired, or order cancelled before fulfillment:
+- Release reservation.
+
+Admin stock adjustment:
+- Must not set stock_on_hand below reserved_qty unless super_admin override with reason.
+
+9.6 Review lifecycle
+
+pending
+-> approved
+-> rejected
+-> hidden
+
+Rules:
+- Customer creates review after purchase if review eligibility is enabled.
+- New review defaults to pending unless auto-approve is enabled.
+- Approved reviews update product average rating and review count.
+- Hidden/rejected reviews do not count toward rating summary.
+
+10. Admin Backend Requirements
+
+Admin dashboard data
+
+Dashboard widget   | Backend source      | Calculation
+-------------------+---------------------+---------------------------------------------------------------------------------------
+Total revenue      | orders, payments    | Sum paid orders for selected date range, excluding cancelled/refunded based on policy.
+Total orders       | orders              | Count orders by date range and compare to previous period.
+Pending products   | products            | Count status draft or pending approval if approval workflow exists.
+Total product      | products            | Count active plus draft products excluding archived.
+Revenue chart      | daily_sales_rollups | Daily or monthly paid revenue and loss/cost if cost data exists.
+Order status donut | orders              | Count active orders by Pending, Processing, Shipped, Delivered, Cancelled.
+Low stock alerts   | inventory_items     | Items where available stock <= low_stock_threshold.
+Logistics feed     | shipments           | Latest shipment status by tracking/fleet id if manual logistics data exists.
+
+Admin list requirements
+
+List page   | Filters                                                   | Required backend behaviors
+------------+-----------------------------------------------------------+----------------------------------------------------------------------------------------------------
+Products    | search, status, category, stock status, featured          | Pagination, sort, bulk status update, edit, archive, image count, active/draft/out-of-stock badges.
+Orders      | search order/customer, status, payment status, date range | Status badge, view detail, update status, tracking, cancel, invoice, CSV import if approved.
+Inventory   | search SKU/name, low stock, out of stock                  | Stock adjustment, threshold changes, low stock notification.
+Coupons     | search code, active, expired, date range                  | Create/update/archive coupon, usage stats, redemption counts.
+Flash deals | active, scheduled, expired                                | Schedule campaign, assign products, set deal discount, validate overlap.
+Customers   | search name/email/phone, status, spend tier               | View profile summary, order count, spend, suspend if required.
+Reviews     | status, rating, product                                   | Approve/reject/hide/reply, recalculate product rating.
+Content     | type, status, publish window                              | Manage home banners, popups, content blocks, active windows.
+Settings    | settings group                                            | Payment, shipping, tax, notifications, password/security changes with audit log.
+
+11. Customer Backend Requirements
+
+Storefront and shopping
+Home page endpoint returns sections seen in UI: flash sale, best sellers, top rated, new arrival, category blocks, hero banners, and promotional popups.
+Shop page supports search, category filtering, pagination, sorting, price filters, and rating filters.
+Product detail returns gallery, rating count, SKU, brand, category, availability, active variants, features, shipping info, description tabs, related products, and share metadata.
+Wishlist requires login. If the UI allows guest wishlist, backend should return a clear requires_login error or support local-to-account merge after login.
+Cart should persist across sessions for logged-in customers and merge guest cart after login.
+
+Customer dashboard
+
+Dashboard page    | Backend data needed                                                                   | Rules
+------------------+---------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------
+Dashboard summary | Recent orders, default card token, default address, loyalty balance, recommendations. | Only current customer data.
+Order history     | Orders, totals, status, date, payment status.                                         | Paginated and sorted newest first.
+Order details     | Line items, address snapshot, payment, status timeline, invoice link.                 | Customer can only view own order.
+Track order       | Shipment status, tracking number, timeline events.                                    | Public tracking requires order number plus email/phone.
+Addresses         | Saved addresses and default marker.                                                   | Cannot delete last default without replacement if required.
+Cards             | Gateway-tokenized saved cards.                                                        | No raw cards stored. Remove only deletes local token reference unless gateway delete is supported.
+Profile settings  | Name, email, phone, avatar.                                                           | Changing email may require reverification.
+Notifications     | Notification inbox and preferences.                                                   | Mark read/unread supported.
+Loyalty points    | Balance and ledger.                                                                   | Balance must equal ledger sum.
+Referral          | Code, link, invited users, reward stats.                                              | Reward only after qualifying action.
+My reviews        | Submitted reviews and status.                                                         | Pending or hidden review visibility depends on policy.
+
+12. Notifications, Emails, and Jobs
+
+Event-driven notifications
+
+Trigger              | Recipients                      | Channels               | Payload
+---------------------+---------------------------------+------------------------+------------------------------------------------------
+new_order_created    | Admin ops, customer             | In-app, email          | Order number, amount, customer, created time.
+payment_success      | Customer, admin ops             | In-app, email          | Order number, paid amount, payment reference.
+payment_failed       | Customer, admin ops if repeated | In-app, email          | Order number, failure reason if safe.
+low_stock_detected   | Admin/catalog manager           | In-app, optional email | Product, SKU, available stock, threshold.
+order_status_changed | Customer                        | In-app, email          | Old status, new status, tracking number if available.
+review_created       | Admin/marketing                 | In-app                 | Product, rating, customer, review status.
+review_reply_added   | Customer                        | In-app, email optional | Product and reply preview.
+coupon_expiring      | Marketing/admin                 | In-app                 | Coupon code, expiry time, usage stats.
+referral_qualified   | Customer                        | In-app, email optional | Reward earned and referred user status.
+
+Scheduled and async jobs
+Expire unpaid orders and release inventory reservations.
+Expire coupons and flash deals based on end_at.
+Recalculate product rating summaries after review moderation.
+Generate daily sales and product rollups for analytics dashboard.
+Send queued emails and retry failed deliveries.
+Scan inventory for low stock and create notifications once per threshold event.
+Resize product, category, and banner images after upload.
+Clean expired password reset and verification tokens.
+
+13. Analytics and Reporting
+
+Admin analytics metrics
+
+Metric                  | Formula                                                                          | Notes
+------------------------+----------------------------------------------------------------------------------+----------------------------------------------
+Gross sales             | Sum order_items gross before discounts for paid orders.                          | Use order snapshots.
+Net revenue             | Subtotal - discounts + shipping + tax for paid orders, depending finance policy. | Clarify if shipping and tax count as revenue.
+Total orders            | Count orders by status and date.                                                 | Separate paid from pending payment.
+Average order value     | Net paid revenue / paid order count.                                             | Avoid divide by zero.
+Conversion proxy        | Paid orders / checkout starts.                                                   | Requires analytics_events.
+Best sellers            | Sum quantity sold by product for paid orders.                                    | Exclude cancelled/refunded if policy says.
+Low stock count         | Count inventory_items where available <= threshold.                              | Used in dashboard.
+Coupon performance      | Redemptions, discount total, paid orders using coupon.                           | Important for marketing spend control.
+Flash deal performance  | Views, add-to-cart, sold quantity, revenue.                                      | Views require frontend event tracking.
+Customer lifetime value | Sum paid order value by customer.                                                | For customer list and retention.
+
+Analytics event names
+
+Event                 | When fired                      | Required metadata
+----------------------+---------------------------------+-----------------------------------------------
+product_viewed        | Product detail loaded.          | product_id, category_id, price_minor, source.
+search_performed      | Search submitted.               | query, result_count, filters.
+product_added_to_cart | Cart item added.                | product_id, variant_id, quantity, price_minor.
+checkout_started      | Checkout page or quote started. | cart_id, item_count, subtotal_minor.
+coupon_applied        | Coupon accepted.                | coupon_id, code, discount_minor.
+payment_initialized   | Gateway payment started.        | order_id, amount_minor, gateway.
+order_paid            | Payment confirmed.              | order_id, total_minor, gateway.
+wishlist_added        | Wishlist action completed.      | product_id, user_id.
+review_submitted      | Review created.                 | product_id, rating, order_item_id.
+referral_link_copied  | Referral link copied.           | referral_code, user_id.
+
+14. Non-Functional Requirements
+
+Performance targets
+
+Area               | Target                                            | Implementation guidance
+-------------------+---------------------------------------------------+--------------------------------------------------------------------------
+Product list API   | p95 under 500 ms for cached/common queries.       | Add indexes, pagination, cache category menu and home sections.
+Product detail API | p95 under 400 ms excluding cold media.            | Preload related data and cache public product detail for active products.
+Cart operations    | p95 under 300 ms.                                 | Small row operations, validate stock lazily but safely.
+Checkout quote     | p95 under 800 ms.                                 | Optimize pricing service and avoid external gateway calls at quote stage.
+Order creation     | p95 under 1.5 seconds excluding payment redirect. | Use SQL Server transaction and queue non-critical work.
+Admin dashboard    | p95 under 1 second.                               | Use precomputed rollups, not heavy live aggregation.
+Webhook processing | Acknowledge under 3 seconds.                      | Verify, persist event, enqueue heavy work.
+
+Reliability and scaling
+All mutation endpoints use request_id logging and structured errors.
+Checkout and payment endpoints support idempotency keys.
+SQL Server transactions guard inventory and order creation.
+Queues support retry with exponential backoff and dead letter handling.
+Uploads use object storage, not local server disk.
+Backups run daily for database and object storage metadata.
+Use database migrations and rollback strategy for every release.
+Use API versioning and OpenAPI documentation before frontend integration begins.
+
+Accessibility and localization backend support
+Product and media records include alt_text where images are exposed to customers.
+Money formatting should be frontend-controlled, but backend sends currency and integer amount fields.
+Phone numbers should be stored in E.164 where possible.
+Dates should be returned in ISO 8601 UTC plus local display formatting handled by frontend.
+
+15. Observability, Audit, and Operations
+
+Logging and monitoring
+Log every request with request_id, user_id if available, IP, endpoint, status code, latency, and error code.
+Log payment webhook receipt, signature verification result, reference, amount match, status transition, and idempotency decision.
+Log admin mutations with actor, target entity, before/after diff for important fields, reason when required, and IP.
+Track metrics for API latency, error rate, checkout failures, payment webhook failures, low stock count, email failures, queue depth, and database slow queries.
+Create alerts for payment webhook failures, elevated checkout errors, stuck pending_payment orders, queue backlog, and database CPU/storage issues.
+
+Audit log actions
+
+Action                        | Required audit fields
+------------------------------+---------------------------------------------------------------------------
+admin_login                   | admin_id, ip, user_agent, success/failure, timestamp.
+product_created_or_updated    | admin_id, product_id, changed_fields, before, after.
+price_changed                 | admin_id, product_id/variant_id, old_price, new_price, reason.
+stock_adjusted                | admin_id, inventory_item_id, before_qty, after_qty, reason.
+coupon_created_or_updated     | admin_id, coupon_id, changed_fields.
+flash_deal_created_or_updated | admin_id, flash_deal_id, product ids, time window.
+order_status_changed          | admin_id or system, order_id, from_status, to_status, note.
+payment_override              | super_admin_id, payment_id, old_status, new_status, reason, evidence_link.
+settings_changed              | admin_id, key, before, after.
+role_changed                  | super_admin_id, target_user_id, old_role, new_role.
+
+16. QA, Acceptance Criteria, and Test Plan
+
+Definition of Done
+OpenAPI documentation exists and matches implemented endpoints.
+Database migrations run cleanly on empty and existing database.
+Unit tests cover pricing, coupons, inventory, payment webhook processing, order state transitions, and permissions.
+Integration tests cover full checkout with mocked Paystack success and failure.
+Admin endpoints have RBAC tests for allowed and denied roles.
+All sensitive mutations write audit logs.
+No raw card data is stored.
+API errors are consistent and frontend-friendly.
+Background jobs are idempotent and retry-safe.
+Production env variables are documented and secrets are not committed.
+
+High-priority test cases
+
+Area           | Test coverage required
+---------------+--------------------------------------------------------------------------------------------------------------------
+Auth           | Register, verify email, login, refresh, logout, forgot/reset password, invalid token, expired token, rate limit.
+Catalog        | Create product, duplicate SKU rejected, inactive product hidden, slug uniqueness, media upload validation.
+Inventory      | Low stock alert, stock adjustment audit, concurrent checkout does not oversell.
+Coupon         | Valid coupon applies, expired coupon rejected, usage limit enforced, per-user limit enforced, min order enforced.
+Flash deal     | Active deal changes price during window, expired deal stops applying, overlapping deal rejected.
+Cart           | Add/update/remove items, price change warning, out-of-stock warning, guest cart merge after login.
+Checkout       | Quote matches order totals, shipping and tax calculated, idempotency prevents duplicate order.
+Payment        | Initialize Paystack, verify success, fail mismatched amount, ignore duplicate webhook, handle failed payment.
+Orders         | Customer sees own order only, admin updates status, invalid status transition rejected, tracking notification sent.
+Reviews        | Only purchased item review allowed if enabled, duplicate review rejected, admin approval updates rating.
+Loyalty        | Points awarded after paid order only once, refund reverses points if policy enabled.
+Referral       | Referral code attribution, no self-referral, reward only after qualifying paid order.
+Admin security | Support agent cannot change price, marketing cannot update payment settings, all admin changes audited.
+Notifications  | Unread count updates, mark read works, admin dropdown returns recent events.
+Analytics      | Daily rollup matches paid order data and excludes cancelled orders based on policy.
+
+17. Release Plan and Backend Milestones
+
+Milestone plan
+
+Milestone                      | Backend scope                                                                                    | Exit criteria
+-------------------------------+--------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------
+M0 - Foundation                | Project setup, env config, DB, migrations, auth base, roles, OpenAPI, logging, error envelope.   | API boots, CI runs tests, health endpoint works, seed admin created.
+M1 - Catalog and admin basics  | Products, categories, media, inventory, admin product/category screens, storefront catalog APIs. | Admin can create active product and customer storefront can view/search it.
+M2 - Cart, checkout, payment   | Cart, quote, order creation, Paystack initialize/verify/webhook, inventory reservation.          | Customer can complete paid order end-to-end in sandbox.
+M3 - Orders and operations     | Admin order detail, status updates, tracking, invoice, customer track order, notifications.      | Admin can fulfill an order and customer sees timeline changes.
+M4 - Promotions and engagement | Coupons, flash deals, reviews, wishlist, loyalty, referrals.                                     | Marketing flows work and pricing rules are tested.
+M5 - CMS, analytics, hardening | Content blocks, settings, dashboard rollups, security hardening, monitoring, backups.            | Admin dashboard works and release checklist passes.
+
+Suggested implementation order
+Start with database schema and OpenAPI contract before frontend wiring.
+Build auth, roles, and admin audit logging early because every admin feature depends on them.
+Build catalog and inventory before checkout because checkout cannot be correct without price and stock rules.
+Build Paystack webhook processing before polishing checkout UI because payment truth is backend-side.
+Add analytics rollups after transactional flows are stable, not before.
+
+18. Open Questions and Decisions Needed
+
+Decision                   | Why it matters                                                     | Recommended default
+---------------------------+--------------------------------------------------------------------+--------------------------------------------------------------------------
+Payment gateways           | Screens show Paystack, but checkout may need other gateways later. | Use Paystack v1 with gateway abstraction.
+Tax policy                 | Admin screenshot shows VAT 7.5 percent.                            | Set configurable VAT default to 7.5 percent until finance confirms.
+Shipping methods           | UI shows shipping info but not carrier integration.                | Manual shipping methods and tracking number in v1.
+Guest checkout             | Checkout screen appears public.                                    | Support guest checkout with email/phone and optional account link.
+Inventory deduction timing | Can deduct at payment success or processing.                       | Reserve at order creation, deduct at payment success.
+Coupon stacking            | Flash deals and coupons may conflict.                              | Do not allow coupon stacking on flash deal items unless configured.
+Loyalty rules              | Screens show loyalty points but not earning/redeem formula.        | Award points after paid order. Redemption disabled until rule confirmed.
+Referral reward            | Referral screen exists but reward not defined.                     | Reward after referred user completes first paid order.
+Returns/refunds            | No return flow shown.                                              | Prepare refund status fields but do not expose full returns module in v1.
+Admin roles                | Screens show Admin only.                                           | Implement roles now to avoid risky all-powerful admin account later.
+Invoice format             | Admin has print invoice.                                           | Generate server-side PDF invoice from order snapshot.
+CSV import                 | Order page shows Import CSV button.                                | Confirm actual use before building. Mark optional.
+
+19. Appendix: Suggested Developer Tickets
+
+Ticket | Description                                                                           | Milestone
+-------+---------------------------------------------------------------------------------------+----------
+BE-001 | Set up backend project, environments, linting, tests, and OpenAPI docs.               | M0
+BE-002 | Implement users, roles, permissions, auth tokens, email verification, password reset. | M0
+BE-003 | Implement admin audit log middleware/service.                                         | M0
+BE-004 | Create category, brand, product, variant, media, SEO models and APIs.                 | M1
+BE-005 | Implement product image upload and processing pipeline.                               | M1
+BE-006 | Implement inventory items, reservations, adjustments, and low stock alerts.           | M1
+BE-007 | Implement storefront home, product list, product detail, category APIs.               | M1
+BE-008 | Implement cart and guest cart merge.                                                  | M2
+BE-009 | Implement pricing service for tax, shipping, coupons, flash deals, and totals.        | M2
+BE-010 | Implement checkout quote and order creation with idempotency.                         | M2
+BE-011 | Implement Paystack initialize, verify, webhook, and payment events.                   | M2
+BE-012 | Implement order state machine, status history, tracking, invoice generation.          | M3
+BE-013 | Implement customer dashboard order history and public track-order lookup.             | M3
+BE-014 | Implement admin order management endpoints and notifications.                         | M3
+BE-015 | Implement coupons and coupon redemption limits.                                       | M4
+BE-016 | Implement flash deals with scheduling and product assignment.                         | M4
+BE-017 | Implement wishlist, reviews, moderation, and rating summaries.                        | M4
+BE-018 | Implement loyalty points ledger and referral tracking.                                | M4
+BE-019 | Implement CMS content blocks, banners, popups, footer/settings APIs.                  | M5
+BE-020 | Implement analytics events, rollups, admin dashboard metrics.                         | M5
+BE-021 | Implement security hardening, rate limits, monitoring, backups, and alerting.         | M5
+BE-022 | Write integration test suite for checkout, payment, inventory, admin permissions.     | All

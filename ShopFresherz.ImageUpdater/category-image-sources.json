@@ -1,0 +1,112 @@
+{
+  "Categories": [
+    {
+      "Slug": "mobile-phones",
+      "Name": "Mobile Phones",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=90",
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=90",
+        "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "laptops-computers",
+      "Name": "Laptops & Computers",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=90",
+        "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&q=90",
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "games-consoles",
+      "Name": "Games & Consoles",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=90",
+        "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=90",
+        "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "accessories",
+      "Name": "Accessories",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1583394293050-4a21ec3f05bd?w=800&q=90",
+        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=90",
+        "https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "smart-watches",
+      "Name": "Smart Watches",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=90",
+        "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&q=90",
+        "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "chargers",
+      "Name": "Chargers",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=90",
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=90",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "power-banks",
+      "Name": "Power Banks",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=90",
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=90",
+        "https://images.unsplash.com/photo-1609592806596-b36a8448c578?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "audio",
+      "Name": "Audio",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=90",
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=90",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "computing-accessories",
+      "Name": "Computing Accessories",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1593640495253-23196b27a87f?w=800&q=90",
+        "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=800&q=90",
+        "https://images.unsplash.com/photo-1515523110800-9415d13b84a8?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "cables",
+      "Name": "Cables",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=90",
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=90",
+        "https://images.unsplash.com/photo-1589149098258-3e9102cd63d3?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "electronics",
+      "Name": "Electronics",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&q=90",
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=90",
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=90"
+      ]
+    },
+    {
+      "Slug": "new-arrivals",
+      "Name": "New Arrivals",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=90",
+        "https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=90",
+        "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=800&q=90"
+      ]
+    }
+  ]
+}

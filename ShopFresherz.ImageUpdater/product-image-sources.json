@@ -1,0 +1,524 @@
+{
+  "Products": [
+    {
+      "ProductId": "11111111-1001-0000-0000-000000000001",
+      "Sku": "IP16PMAX-256",
+      "Name": "Apple iPhone 16 Pro Max 256GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2024/09/apple-debuts-iphone-16-pro-and-iphone-16-pro-max/article/Apple-iPhone-16-Pro-hero-240909_inline.jpg.large.jpg",
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro-max.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-16-pro-max-1.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1002-0000-0000-000000000001",
+      "Sku": "IP16PRO-256",
+      "Name": "Apple iPhone 16 Pro 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-16-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-16-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1003-0000-0000-000000000001",
+      "Sku": "IP15PMAX-256",
+      "Name": "Apple iPhone 15 Pro Max 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15-pro-max.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-max-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-max-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1004-0000-0000-000000000001",
+      "Sku": "IP15-128",
+      "Name": "Apple iPhone 15 128GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1005-0000-0000-000000000001",
+      "Sku": "IP14PRO-256",
+      "Name": "Apple iPhone 14 Pro 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-14-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-14-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1006-0000-0000-000000000001",
+      "Sku": "SGS25U-512",
+      "Name": "Samsung Galaxy S25 Ultra 512GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s25-ultra-sm-s938-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s25-ultra-sm-s938-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1007-0000-0000-000000000001",
+      "Sku": "SGS24FE-128",
+      "Name": "Samsung Galaxy S24 FE 128GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24-fe.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-fe-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-fe-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1008-0000-0000-000000000001",
+      "Sku": "SGA56-128",
+      "Name": "Samsung Galaxy A56 5G 128GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a56.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-a56-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-a56-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1009-0000-0000-000000000001",
+      "Sku": "SGA36-128",
+      "Name": "Samsung Galaxy A36 5G 128GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a36.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-a36-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-a36-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1010-0000-0000-000000000001",
+      "Sku": "SGZFLIP6-256",
+      "Name": "Samsung Galaxy Z Flip6 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-flip6-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-flip6-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1011-0000-0000-000000000001",
+      "Sku": "RN13PP-256",
+      "Name": "Xiaomi Redmi Note 13 Pro+ 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-13-pro+.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-13-pro-plus-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-13-pro-plus-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1012-0000-0000-000000000001",
+      "Sku": "RN13-128",
+      "Name": "Xiaomi Redmi Note 13 5G 128GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-13-5g.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-13-5g-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-13-5g-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1013-0000-0000-000000000001",
+      "Sku": "INX-GT20P-256",
+      "Name": "Infinix GT 20 Pro 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/infinix-gt20-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-gt-20-pro-0.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-gt-20-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1014-0000-0000-000000000001",
+      "Sku": "INX-GT10P-256",
+      "Name": "Infinix GT 10 Pro 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/infinix-gt-10-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-gt-10-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-gt-10-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1015-0000-0000-000000000001",
+      "Sku": "TECNO-C30P-256",
+      "Name": "Tecno Camon 30 Pro 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-30-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-camon-30-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-camon-30-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1016-0000-0000-000000000001",
+      "Sku": "TECNO-PV6P-256",
+      "Name": "Tecno Pova 6 Pro 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/tecno-pova6-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-pova-6-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-pova-6-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1017-0000-0000-000000000001",
+      "Sku": "REDMI-A3-64",
+      "Name": "Xiaomi Redmi A3 64GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-a3.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-a3-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-a3-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "11111111-1018-0000-0000-000000000001",
+      "Sku": "INX-NOTE40P-256",
+      "Name": "Infinix Note 40 Pro+ 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/infinix-note-40-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-note-40-pro-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-note-40-pro-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "22222222-2001-0000-0000-000000000001",
+      "Sku": "MBA-M4-13-16-256",
+      "Name": "Apple MacBook Air M4 13-inch 16GB 256GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-hero-250312_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-2-up-250312_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-lifestyle-250312_big.jpg.large.jpg"
+      ]
+    },
+    {
+      "ProductId": "22222222-2002-0000-0000-000000000001",
+      "Sku": "MBA-M4-15-16-256",
+      "Name": "Apple MacBook Air M4 15-inch 16GB 256GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-hero-250312_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-open-250312_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2025/03/apple-introduces-macbook-air-with-m4-chip/article/Apple-MacBook-Air-M4-2-up-250312_big.jpg.large.jpg"
+      ]
+    },
+    {
+      "ProductId": "22222222-2003-0000-0000-000000000001",
+      "Sku": "MBP-M4-14-16-512",
+      "Name": "Apple MacBook Pro M4 14-inch 16GB 512GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2024/10/apple-introduces-new-macbook-pro-featuring-m4-family-of-chips/article/Apple-MacBook-Pro-hero-241028_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/10/apple-introduces-new-macbook-pro-featuring-m4-family-of-chips/article/Apple-MacBook-Pro-2up-241028_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/10/apple-introduces-new-macbook-pro-featuring-m4-family-of-chips/article/Apple-MacBook-Pro-lifestyle-241028_big.jpg.large.jpg"
+      ]
+    },
+    {
+      "ProductId": "33333333-3001-0000-0000-000000000001",
+      "Sku": "PS5-SLIM-DISC",
+      "Name": "Sony PlayStation 5 Slim Disc Edition",
+      "SourceUrls": [
+        "https://media.direct.playstation.com/is/image/sierialto/2025-PS5-Disc-Hero1",
+        "https://media.direct.playstation.com/is/image/sierialto/2025-PS5-Disc-Hero-2-forward-facing",
+        "https://media.direct.playstation.com/is/image/sierialto/2025-PS5-Disc-Features-Console-DualSense"
+      ]
+    },
+    {
+      "ProductId": "33333333-3002-0000-0000-000000000001",
+      "Sku": "XBOX-SX-1TB",
+      "Name": "Microsoft Xbox Series X 1TB",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=1200&q=90",
+        "https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?w=1200&q=90",
+        "https://images.unsplash.com/photo-1604754742629-3e5728249d73?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "33333333-3003-0000-0000-000000000001",
+      "Sku": "NSW-OLED-WHT",
+      "Name": "Nintendo Switch OLED White",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1200&q=90",
+        "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=1200&q=90",
+        "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4001-0000-0000-000000000001",
+      "Sku": "PS5-DS-WHT",
+      "Name": "Sony PS5 DualSense Wireless Controller White",
+      "SourceUrls": [
+        "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-controller-white-thumbnail-01-en-30jun20",
+        "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-controller-white-thumbnail-02-en-30jun20",
+        "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4002-0000-0000-000000000001",
+      "Sku": "PS5-DS-MID-BLK",
+      "Name": "Sony PS5 DualSense Midnight Black Controller",
+      "SourceUrls": [
+        "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-controller-midnight-black-thumbnail-01-en-12jan22",
+        "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-controller-midnight-black-thumbnail-02-en-12jan22",
+        "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4003-0000-0000-000000000001",
+      "Sku": "HXCLD2-BLK",
+      "Name": "HyperX Cloud II Gaming Headset Black",
+      "SourceUrls": [
+        "https://hyperx.com/cdn/shop/files/KHX-HSCP-RD_KHX-HSCP-GM_1.png?v=1699458424&width=1200",
+        "https://hyperx.com/cdn/shop/files/KHX-HSCP-RD_KHX-HSCP-GM_2.png?v=1699458424&width=1200",
+        "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4004-0000-0000-000000000001",
+      "Sku": "REDR-K552-RGB",
+      "Name": "Redragon K552 Kumara Mechanical RGB Keyboard",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=1200&q=90",
+        "https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=1200&q=90",
+        "https://images.unsplash.com/photo-1595225476474-87563907a212?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4005-0000-0000-000000000001",
+      "Sku": "RAZER-DAV3-HS",
+      "Name": "Razer DeathAdder V3 HyperSpeed Gaming Mouse",
+      "SourceUrls": [
+        "https://assets2.razerzone.com/images/pnx.assets/ef0800b3d46c633e4fac8bedf33fc991/dav3hyperspeed-desktop-hero.webp",
+        "https://assets2.razerzone.com/images/pnx.assets/96e3ee50ed28b90861a527dd95021cdd/dav3hyperspeed-desktop-usp-ultra-lightweight-design.webp",
+        "https://assets2.razerzone.com/images/pnx.assets/7d1195ef879a95dc65dd2b695a48bfea/dav3hyperspeed-desktop-usp-erogomic-design.webp"
+      ]
+    },
+    {
+      "ProductId": "44444444-4006-0000-0000-000000000001",
+      "Sku": "GTR-PRO-CHAIR",
+      "Name": "GTRacing Gaming Chair Pro Series Black",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1612994370726-5d4d609eca49?w=1200&q=90",
+        "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=1200&q=90",
+        "https://images.unsplash.com/photo-1616353071588-708dcff912b2?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4007-0000-0000-000000000001",
+      "Sku": "CM-NOTEPAL-X3",
+      "Name": "Cooler Master NotePal X3 Laptop Cooling Pad",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=1200&q=90",
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1200&q=90",
+        "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "44444444-4008-0000-0000-000000000001",
+      "Sku": "UGREEN-HDMI21-2M",
+      "Name": "UGREEN HDMI 2.1 Cable 8K 2 Metres",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1624953587687-daf255b6b80a?w=1200&q=90",
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=90",
+        "https://images.unsplash.com/photo-1555617981-dac3772ec729?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "55555555-5001-0000-0000-000000000001",
+      "Sku": "APPLE-20W-USBC",
+      "Name": "Apple 20W USB-C Power Adapter",
+      "SourceUrls": [
+        "https://www.apple.com/uk/shop/product/MHJA3B/A/20w-usb-c-power-adapter",
+        "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MHJA3?wid=1200&hei=630&fmt=jpeg&qlt=95",
+        "https://images.unsplash.com/photo-1608751819407-8c8675ebcf91?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "55555555-5002-0000-0000-000000000001",
+      "Sku": "ANKER-65W-GAN",
+      "Name": "Anker 65W GaN USB-C Wall Charger",
+      "SourceUrls": [
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2667_2.jpg?v=1641283041&width=1200",
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2667_3.jpg?v=1641283041&width=1200",
+        "https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "55555555-5003-0000-0000-000000000001",
+      "Sku": "ORAIMO-33W-CHGR",
+      "Name": "Oraimo 33W Super Fast Charger",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1619895862022-09114b41f16f?w=1200&q=90",
+        "https://images.unsplash.com/photo-1608751819407-8c8675ebcf91?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "55555555-5004-0000-0000-000000000001",
+      "Sku": "XIAOMI-67W-GAN",
+      "Name": "Xiaomi 67W GaN Type-C Fast Charger",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1608751819407-8c8675ebcf91?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=1200&q=90",
+        "https://images.unsplash.com/photo-1619895862022-09114b41f16f?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "66666666-6001-0000-0000-000000000001",
+      "Sku": "ORAIMO-PB-20K",
+      "Name": "Oraimo OPB-P20000P 20000mAh Power Bank",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1609592806596-b36a8448c578?w=1200&q=90",
+        "https://images.unsplash.com/photo-1618478210966-8e03b0bdee7c?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "66666666-6002-0000-0000-000000000001",
+      "Sku": "ANKER-PC-26800",
+      "Name": "Anker PowerCore 26800mAh Power Bank",
+      "SourceUrls": [
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A1277_1.jpg?v=1601268267&width=1200",
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A1277_2.jpg?v=1601268267&width=1200",
+        "https://images.unsplash.com/photo-1609592806596-b36a8448c578?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "66666666-6003-0000-0000-000000000001",
+      "Sku": "XIAOMI-PB-33W-20K",
+      "Name": "Xiaomi 33W Power Bank 20000mAh",
+      "SourceUrls": [
+        "https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58D01AA/pms_1703567018.99014099.png",
+        "https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58D01AA/pms_1703567021.89618697.png",
+        "https://images.unsplash.com/photo-1618478210966-8e03b0bdee7c?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "77777777-7001-0000-0000-000000000001",
+      "Sku": "APP-AIRPODS-PRO2",
+      "Name": "Apple AirPods Pro 2nd Gen USB-C",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2023/09/apple-introduces-new-airpods-pro-2nd-generation/article/Apple-AirPods-Pro-2nd-generation-USB-C-connection-230912_inline.jpg.large.jpg",
+        "https://fdn2.gsmarena.com/vv/bigpic/apple-airpods-pro-2gen.jpg",
+        "https://www.apple.com/newsroom/images/2023/09/apple-introduces-new-airpods-pro-2nd-generation/article/Apple-AirPods-Pro-2nd-generation-USB-C-connection-demo-230912_big.jpg.large.jpg"
+      ]
+    },
+    {
+      "ProductId": "77777777-7002-0000-0000-000000000001",
+      "Sku": "ORAIMO-FREEPODS5",
+      "Name": "Oraimo FreePods 5 TWS Earbuds",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1606741965526-6814f16b9f08?w=1200&q=90",
+        "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=1200&q=90",
+        "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "77777777-7003-0000-0000-000000000001",
+      "Sku": "JBL-CHARGE5-BLK",
+      "Name": "JBL Charge 5 Portable Bluetooth Speaker",
+      "SourceUrls": [
+        "https://iprsoftwaremedia.com/214/files/20210/JBL%20Charge%205.jpg",
+        "https://iprsoftwaremedia.com/214/files/20210/5ff4db7b2cfac225067e94de_JBL%20Charge%205/JBL%20Charge%205_mid.jpg",
+        "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8001-0000-0000-000000000001",
+      "Sku": "SPIGEN-IP16PM-UH",
+      "Name": "Spigen iPhone 16 Pro Max Case Ultra Hybrid",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&q=90",
+        "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8002-0000-0000-000000000001",
+      "Sku": "SAMSNG-S25U-CASE",
+      "Name": "Samsung Galaxy S25 Ultra Silicone Case Black",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&q=90",
+        "https://images.unsplash.com/photo-1592950630581-03cb41342cc5?w=1200&q=90",
+        "https://images.unsplash.com/photo-1566045542032-3570db54cf19?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8003-0000-0000-000000000001",
+      "Sku": "IP16PM-TEMPERED",
+      "Name": "iPhone 16 Pro Max 9H Tempered Glass Screen Protector",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1592950630581-03cb41342cc5?w=1200&q=90",
+        "https://images.unsplash.com/photo-1566045542032-3570db54cf19?w=1200&q=90",
+        "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8004-0000-0000-000000000001",
+      "Sku": "SGS25-TEMPERED",
+      "Name": "Samsung Galaxy S25 Ultra Screen Protector 2-Pack",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1566045542032-3570db54cf19?w=1200&q=90",
+        "https://images.unsplash.com/photo-1592950630581-03cb41342cc5?w=1200&q=90",
+        "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8005-0000-0000-000000000001",
+      "Sku": "ANKER-USBC-240W",
+      "Name": "Anker 240W USB-C Cable 2 Metres Braided",
+      "SourceUrls": [
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/files/SKU-06-3ft_Black_1600x.png?v=1768185584",
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/files/A82E2011_Rich_image_TD02_US_V4_589572dc-9b96-4f74-8806-49c58d4c834f_1600x.jpg?v=1768185584",
+        "https://images.unsplash.com/photo-1624953587687-daf255b6b80a?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "88888888-8006-0000-0000-000000000001",
+      "Sku": "ORAIMO-USBC-100W",
+      "Name": "Oraimo 100W USB-C Braided Cable 1 Metre",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1624953587687-daf255b6b80a?w=1200&q=90",
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=90",
+        "https://images.unsplash.com/photo-1555617981-dac3772ec729?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "99999999-9001-0000-0000-000000000001",
+      "Sku": "AW-S10-45-BLK",
+      "Name": "Apple Watch Series 10 45mm Black",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2024/09/introducing-apple-watch-series-10/article/Apple-Watch-Series-10-hero-240909_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/09/introducing-apple-watch-series-10/article/Apple-Watch-Series-10-lineup-240909_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/09/introducing-apple-watch-series-10/article/Apple-Watch-Series-10-profile-240909_big.jpg.large.jpg"
+      ]
+    },
+    {
+      "ProductId": "99999999-9002-0000-0000-000000000001",
+      "Sku": "SGW7-44-BLK",
+      "Name": "Samsung Galaxy Watch 7 44mm Black",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-watch-7.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-watch7-1.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-watch7-2.jpg"
+      ]
+    },
+    {
+      "ProductId": "aaaaaaaa-a001-0000-0000-000000000001",
+      "Sku": "NEEWER-18RL-KIT",
+      "Name": "Neewer 18-Inch LED Ring Light Kit with Stand",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1616711906333-53a0b99b9444?w=1200&q=90",
+        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=90",
+        "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "aaaaaaaa-a002-0000-0000-000000000001",
+      "Sku": "FLEXSTAND-PHONE",
+      "Name": "Flexible Gooseneck Phone Stand & Holder",
+      "SourceUrls": [
+        "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=1200&q=90",
+        "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&q=90"
+      ]
+    }
+  ]
+}

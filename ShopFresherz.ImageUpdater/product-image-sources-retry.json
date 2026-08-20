@@ -1,0 +1,74 @@
+{
+  "Products": [
+    {
+      "ProductId": "11111111-1016-0000-0000-000000000001",
+      "Sku": "TECNO-PV6P-256",
+      "Name": "Tecno Pova 6 Pro 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/tecno-pova-6-pro.jpg",
+        "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-pova-6-1.jpg",
+        "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "11111111-1018-0000-0000-000000000001",
+      "Sku": "INX-NOTE40P-256",
+      "Name": "Infinix Note 40 Pro+ 5G 256GB",
+      "SourceUrls": [
+        "https://fdn2.gsmarena.com/vv/bigpic/infinix-note40.jpg",
+        "https://fdn2.gsmarena.com/vv/bigpic/infinix-note40pro.jpg",
+        "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "22222222-2001-0000-0000-000000000001",
+      "Sku": "MBA-M4-13-16-256",
+      "Name": "Apple MacBook Air M4 13-inch 16GB 256GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2024/03/apple-unveils-the-new-13-and-15-inch-macbook-air-with-the-powerful-m3-chip/article/Apple-MacBook-Air-2-up-hero-240304_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/03/apple-unveils-the-new-13-and-15-inch-macbook-air-with-the-powerful-m3-chip/article/Apple-MacBook-Air-2-up-front-240304_big.jpg.large.jpg",
+        "https://images.unsplash.com/photo-1611186871525-d1f37c28f823?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "22222222-2002-0000-0000-000000000001",
+      "Sku": "MBA-M4-15-16-256",
+      "Name": "Apple MacBook Air M4 15-inch 16GB 256GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2024/03/apple-unveils-the-new-13-and-15-inch-macbook-air-with-the-powerful-m3-chip/article/Apple-MacBook-Air-2-up-hero-240304_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2024/03/apple-unveils-the-new-13-and-15-inch-macbook-air-with-the-powerful-m3-chip/article/Apple-MacBook-Air-lifestyle-240304_big.jpg.large.jpg",
+        "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "22222222-2003-0000-0000-000000000001",
+      "Sku": "MBP-M4-14-16-512",
+      "Name": "Apple MacBook Pro M4 14-inch 16GB 512GB",
+      "SourceUrls": [
+        "https://www.apple.com/newsroom/images/2023/10/apple-unveils-new-macbook-pro-featuring-m3-chips/article/Apple-MacBook-Pro-hero-231030_big.jpg.large.jpg",
+        "https://www.apple.com/newsroom/images/2023/10/apple-unveils-new-macbook-pro-featuring-m3-chips/article/Apple-MacBook-Pro-2up-231030_big.jpg.large.jpg",
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "66666666-6002-0000-0000-000000000001",
+      "Sku": "ANKER-PC-26800",
+      "Name": "Anker PowerCore 26800mAh Power Bank",
+      "SourceUrls": [
+        "https://cdn.shopify.com/s/files/1/0493/9834/9974/files/A1277011_RichContentImage_01_1600x.jpg?v=1710409278",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&q=90",
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&q=90"
+      ]
+    },
+    {
+      "ProductId": "66666666-6003-0000-0000-000000000001",
+      "Sku": "XIAOMI-PB-33W-20K",
+      "Name": "Xiaomi 33W Power Bank 20000mAh",
+      "SourceUrls": [
+        "https://cdn.cnbj1.fds.api.mi-img.com/b2c-shopapi-pms/pms_1672902765.85578268.png",
+        "https://images.unsplash.com/photo-1609592806596-b36a8448c578?w=1200&q=90",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&q=90"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+@ShopFresherz.API_HostAddress = http://localhost:5207
+
+GET {{ShopFresherz.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

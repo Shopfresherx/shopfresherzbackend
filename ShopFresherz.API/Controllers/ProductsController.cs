@@ -1,4 +1,5 @@
 using MediatR;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopFresherz.Application.Common;
@@ -106,6 +107,42 @@ public sealed class ProductsController : ControllerBase
             await _mediator.Send(new DeleteProductCommand(id), cancellationToken);
 
         return result.IsSuccess ? NoContent() : MapError(result.Error);
+    }
+
+    /// <summary>Imports products from a CSV file, updating rows that match an existing SKU.</summary>
+    [Authorize(Policy = "RequireAdmin")]
+    [HttpPost("import-csv")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(10 * 1024 * 1024)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ImportCsv(
+        [FromForm] IFormFile file,
+        CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { code = "VALIDATION", message = "Please select a non-empty CSV file." });
+
+        if (!string.Equals(Path.GetExtension(file.FileName), ".csv", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { code = "VALIDATION", message = "Only .csv files are supported." });
+
+        if (file.Length > 10 * 1024 * 1024)
+            return BadRequest(new { code = "VALIDATION", message = "The CSV file must be 10 MB or smaller." });
+
+        await using var memory = new MemoryStream();
+        await file.CopyToAsync(memory, cancellationToken);
+
+        try
+        {
+            ImportProductsCsvResult result = await _mediator.Send(
+                new ImportProductsCsvCommand(memory.ToArray()),
+                cancellationToken);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { code = "VALIDATION", message = ex.Message });
+        }
     }
 
     /// <summary>

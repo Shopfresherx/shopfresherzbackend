@@ -10,6 +10,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Product> builder)
     {
+        // SQL Server Products table has enabled triggers. Disable EF Core's OUTPUT clause for writes.
+        builder.ToTable("Products", table => table.UseSqlOutputClause(false));
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.SKU)
